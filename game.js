@@ -3,9 +3,14 @@ var canvas_height;
 var canvas_width;
 var snake = {
   width: 5,
-  pos: {x: 50, y:50},
-  pieces: [{x:49, y:50},{x:48, y:50},{x:47, y:50},{x:46, y:50},{x:45, y:50}],
-  speed: {x:1, y:0}
+  pieces: [
+    {pos: {x:50, y:50}, speed: {x:1, y:0}},
+    {pos: {x:49, y:50}, speed: {x:1, y:0}},
+    {pos: {x:48, y:50}, speed: {x:1, y:0}},
+    {pos: {x:47, y:50}, speed: {x:1, y:0}},
+    {pos: {x:46, y:50}, speed: {x:1, y:0}}
+  ],
+  corners: []
 };
 var rightDown = false;
 var leftDown = false;
@@ -33,40 +38,51 @@ function draw(){
 
 function drawSnake(){
   //draw snake
-  ctx.fillRect(snake.pos.x, snake.pos.y, snake.width, snake.width);
   $.each(snake.pieces,function(index, value){
-    ctx.fillRect(value.x, value.y, snake.width, snake.width);
+    ctx.fillRect(value.pos.x, value.pos.y, snake.width, snake.width);
   });
 }
 
-function checkCollisions() {
-  if (upDown && snake.speed.y != 1)
-    snake.speed = {x: 0, y:-1 };
-  if (downDown && snake.speed.y != -1)
-    snake.speed = {x: 0, y:1 };
-  if (leftDown && snake.speed.x != 1)
-    snake.speed = {x: -1, y:0 };
-  if (rightDown && snake.speed.x != -1)
-    snake.speed = {x: 1, y:0 };
-}
-function updateSnake() {
-  snake.pos.x += snake.speed.x;
-  snake.pos.y += snake.speed.y;
-
-  $.each(snake.pieces, function(index,value){
-    value.x += snake.speed.x;
-    value.y += snake.speed.y;
-  });
-
-  checkCollisions();
-}
 function update(){
 
-  updateSnake();
-  if(snake.pos.x >= canvas_width - snake.width || snake.pos.x <= 0)
-    snake.speed.x = 0;
-  if(snake.pos.y <= 0 || snake.pos.y >= canvas_height - snake.width)
-    snake.speed.y = 0;
+  $.each(snake.pieces, function(indexPiece,piece){
+    piece.pos.x += piece.speed.x;
+    piece.pos.y += piece.speed.y;
+
+    if(indexPiece != 0){
+      $.each(snake.corners,function(indexCorner,corner){
+        if(piece.x == corner.x && piece.y == corner.y){
+          piece.speed = corner.speed;
+        }
+      });
+    }
+  });
+
+  var head = snake.pieces[0];
+
+  if (upDown && head.speed.y != 1){
+    head.speed = {x: 0, y:-1 };
+	snake.corners.push({pos:head.pos,speed:head.speed});
+  }
+  if (downDown && head.speed.y != -1){
+	head.speed = {x: 0, y:1 };
+	snake.corners.push({pos:head.pos,speed:head.speed});
+  }
+    
+  if (leftDown && head.speed.x != 1){
+	head.speed = {x: -1, y:0 };
+	snake.corners.push({pos:head.pos,speed:head.speed});
+  }
+    
+  if (rightDown && head.speed.x != -1){
+	head.speed = {x: 1, y:0 };
+	snake.corners.push({pos:head.pos,speed:head.speed});
+  }
+    
+  if(head.pos.x >= canvas_width - snake.width || head.pos.x <= 0)
+    head.speed.x = 0;
+  if(head.pos.y <= 0 || head.pos.y >= canvas_height - snake.width)
+    head.speed.y = 0;
   
   draw();
 }
@@ -102,6 +118,5 @@ $(document).ready(function(){
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
   setInterval(update,25)
-  
-  
+
 });
