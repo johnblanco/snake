@@ -1,6 +1,10 @@
+//jquery cdn: http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
+//jquery local: jquery-1.7.2.js
+
 var ctx;
 var canvas_height;
 var canvas_width;
+var debugDiv;
 var snake = {
   width: 5,
   pieces: [
@@ -25,25 +29,68 @@ function drawMap() {
   ctx.fillRect(canvas_width-2, 0, 2, canvas_height);
 }
 
+function debugInfo(){
+  debugDiv.html("---PIECES---</br>");
+  $.each(snake.pieces,function(index,value){
+    debugDiv.html(debugDiv.html() + value.pos.x + " , " + value.pos.y + "<br/>");
+  });
+
+  debugDiv.html(debugDiv.html() + "---SPEED---</br>");
+  debugDiv.html(debugDiv.html() + snake.pieces[0].speed.x + " , " + snake.pieces[0].speed.y + "<br/>");
+
+  debugDiv.html(debugDiv.html() + "---CORNERS---</br>");
+  $.each(snake.corners,function(index,value){
+    debugDiv.html(debugDiv.html() + value.pos.x + " , " + value.pos.y + " " +
+      value.speed.x + " , " + value.speed.y + "<br/>");
+  });
+
+
+}
+
 function clear() {
-  ctx.clearRect(0, 0, 800, 600);
+  ctx.clearRect(0, 0, canvas_width, canvas_height);
 }
 
 function draw(){
   clear();
   drawMap();
   drawSnake();
-
+  debugInfo();
 }
 
 function drawSnake(){
-  //draw snake
+//  draw snake
   $.each(snake.pieces,function(index, value){
     ctx.fillRect(value.pos.x, value.pos.y, snake.width, snake.width);
   });
+  
 }
 
 function update(){
+  var head = snake.pieces[0];
+  if (upDown && head.speed.y != 1){
+    head.speed = {x: 0, y:-1 };
+	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
+  }
+  if (downDown && head.speed.y != -1){
+	  head.speed = {x: 0, y:1 };
+	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
+  }
+
+  if (leftDown && head.speed.x != 1){
+	  head.speed = {x: -1, y:0 };
+	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
+  }
+
+  if (rightDown && head.speed.x != -1){
+	  head.speed = {x: 1, y:0 };
+	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
+  }
+
+  if(head.pos.x >= canvas_width - snake.width || head.pos.x <= 0)
+    head.speed.x = 0;
+  if(head.pos.y <= 0 || head.pos.y >= canvas_height - snake.width)
+    head.speed.y = 0;
 
   $.each(snake.pieces, function(indexPiece,piece){
     piece.pos.x += piece.speed.x;
@@ -52,44 +99,21 @@ function update(){
     if(indexPiece != 0){
       $.each(snake.corners,function(indexCorner,corner){
         if(piece.x == corner.x && piece.y == corner.y){
-          piece.speed = corner.speed;
+          piece.speed.x = corner.speed.x;
+          piece.speed.y = corner.speed.y;
         }
       });
     }
   });
 
-  var head = snake.pieces[0];
 
-  if (upDown && head.speed.y != 1){
-    head.speed = {x: 0, y:-1 };
-	snake.corners.push({pos:head.pos,speed:head.speed});
-  }
-  if (downDown && head.speed.y != -1){
-	head.speed = {x: 0, y:1 };
-	snake.corners.push({pos:head.pos,speed:head.speed});
-  }
-    
-  if (leftDown && head.speed.x != 1){
-	head.speed = {x: -1, y:0 };
-	snake.corners.push({pos:head.pos,speed:head.speed});
-  }
-    
-  if (rightDown && head.speed.x != -1){
-	head.speed = {x: 1, y:0 };
-	snake.corners.push({pos:head.pos,speed:head.speed});
-  }
-    
-  if(head.pos.x >= canvas_width - snake.width || head.pos.x <= 0)
-    head.speed.x = 0;
-  if(head.pos.y <= 0 || head.pos.y >= canvas_height - snake.width)
-    head.speed.y = 0;
-  
   draw();
 }
 
 $(document).ready(function(){
   //hacer que se vea lindo usando
   // una paleta de colores de koul
+  debugDiv = $("#debug");
 
   $(document).keydown(function(evt){
     if (evt.keyCode == 39)
@@ -117,6 +141,6 @@ $(document).ready(function(){
   ctx = $('#canvas')[0].getContext("2d");
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
-  setInterval(update,25)
+  setInterval(update,150)
 
 });
