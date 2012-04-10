@@ -9,10 +9,13 @@ var snake = {
   width: 5,
   pieces: [
     {pos: {x:50, y:50}, speed: {x:1, y:0}},
-    {pos: {x:49, y:50}, speed: {x:1, y:0}},
-    {pos: {x:48, y:50}, speed: {x:1, y:0}},
-    {pos: {x:47, y:50}, speed: {x:1, y:0}},
-    {pos: {x:46, y:50}, speed: {x:1, y:0}}
+    {pos: {x:45, y:50}, speed: {x:1, y:0}},
+    {pos: {x:40, y:50}, speed: {x:1, y:0}},
+    {pos: {x:35, y:50}, speed: {x:1, y:0}},
+    {pos: {x:30, y:50}, speed: {x:1, y:0}},
+    {pos: {x:25, y:50}, speed: {x:1, y:0}},
+    {pos: {x:20, y:50}, speed: {x:1, y:0}},
+    {pos: {x:15, y:50}, speed: {x:1, y:0}}
   ],
   corners: []
 };
@@ -55,7 +58,7 @@ function draw(){
   clear();
   drawMap();
   drawSnake();
-  debugInfo();
+//  debugInfo();
 }
 
 function drawSnake(){
@@ -68,21 +71,21 @@ function drawSnake(){
 
 function update(){
   var head = snake.pieces[0];
-  if (upDown && head.speed.y != 1){
+  if (upDown && head.speed.y == 0){
     head.speed = {x: 0, y:-1 };
 	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
-  if (downDown && head.speed.y != -1){
+  if (downDown && head.speed.y == 0){
 	  head.speed = {x: 0, y:1 };
 	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
 
-  if (leftDown && head.speed.x != 1){
+  if (leftDown && head.speed.x == 0){
 	  head.speed = {x: -1, y:0 };
 	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
 
-  if (rightDown && head.speed.x != -1){
+  if (rightDown && head.speed.x == 0){
 	  head.speed = {x: 1, y:0 };
 	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
@@ -93,17 +96,17 @@ function update(){
     head.speed.y = 0;
 
   $.each(snake.pieces, function(indexPiece,piece){
-    piece.pos.x += piece.speed.x;
-    piece.pos.y += piece.speed.y;
-
     if(indexPiece != 0){
       $.each(snake.corners,function(indexCorner,corner){
-        if(piece.x == corner.x && piece.y == corner.y){
+        if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
           piece.speed.x = corner.speed.x;
           piece.speed.y = corner.speed.y;
         }
       });
     }
+
+    piece.pos.x += piece.speed.x;
+    piece.pos.y += piece.speed.y;
   });
 
 
@@ -141,6 +144,6 @@ $(document).ready(function(){
   ctx = $('#canvas')[0].getContext("2d");
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
-  setInterval(update,150)
+  setInterval(update,15)
 
 });
