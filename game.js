@@ -5,20 +5,23 @@ var ctx;
 var canvas_height;
 var canvas_width;
 var debugDiv;
+var snakeLength = 100;
+var gameOver = false;
 var snake = {
-  width: 5,
-  pieces: [
-    {pos: {x:50, y:50}, speed: {x:1, y:0}},
-    {pos: {x:45, y:50}, speed: {x:1, y:0}},
-    {pos: {x:40, y:50}, speed: {x:1, y:0}},
-    {pos: {x:35, y:50}, speed: {x:1, y:0}},
-    {pos: {x:30, y:50}, speed: {x:1, y:0}},
-    {pos: {x:25, y:50}, speed: {x:1, y:0}},
-    {pos: {x:20, y:50}, speed: {x:1, y:0}},
-    {pos: {x:15, y:50}, speed: {x:1, y:0}}
-  ],
-  corners: []
+  width: 1,
+  corners: [],
+  pieces: [],
 };
+
+
+function makeSnake() {
+  while(snakeLength > 0) {
+    snake.pieces.push({pos: {x:snakeLength, y:50},speed: {x: 1, y: 0}});
+    snakeLength--;
+  } 
+}
+
+
 var rightDown = false;
 var leftDown = false;
 var upDown = false;
@@ -58,7 +61,7 @@ function draw(){
   clear();
   drawMap();
   drawSnake();
-//  debugInfo();
+  //debugInfo();
 }
 
 function drawSnake(){
@@ -69,56 +72,100 @@ function drawSnake(){
   
 }
 
+function rgbToHex(r, g, b) {
+    if (r > 255 || g > 255 || b > 255)
+        throw "Invalid color component";
+    return ((r << 16) | (g << 8) | b).toString(16);
+}
+
+function checkCollisions(head) {
+
+  var response = false;
+  var pixel = ctx.getImageData(head.pos.x + head.speed.x, head.pos.y + head.speed.y, 1, 1).data; 
+  var hex = "#" + ("000000" + rgbToHex(pixel[0], pixel[1], pixel[2])).slice(-6);
+
+  if(ctx.fillStyle == hex && hex != '#000000'){
+    response = true;
+  }
+
+  if (head.pos.x >= canvas_width - snake.width || head.pos.x <= 0){
+    head.speed.x = 0;
+    response = true;
+  }
+  if (head.pos.y <= 0 || head.pos.y >= canvas_height - snake.width){
+    head.speed.y = 0;
+    response = true;
+  }
+
+  return response;
+}
+function checkInputs(head) {
+  if (upDown && head.speed.y == 0) {
+    head.speed = {x: 0, y:-1 };
+    snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
+  }
+  if (downDown && head.speed.y == 0) {
+    head.speed = {x: 0, y:1 };
+    snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
+  }
+
+  if (leftDown && head.speed.x == 0) {
+    head.speed = {x: -1, y:0 };
+    snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
+  }
+
+  if (rightDown && head.speed.x == 0) {
+    head.speed = {x: 1, y:0 };
+    snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
+  }
+}
+
 function update(){
   var head = snake.pieces[0];
-  if (upDown && head.speed.y == 0){
-    head.speed = {x: 0, y:-1 };
-	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
+
+  checkInputs(head);
+  if(!checkCollisions(head)){
+
+	  $.each(snake.pieces, function(indexPiece,piece){
+	    //if(indexPiece != 0){
+	      $.each(snake.corners,function(indexCorner,corner){
+		if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
+		  piece.speed.x = corner.speed.x;
+		  piece.speed.y = corner.speed.y;
+
+		  if(indexPiece == snake.pieces.length-1){
+		    //es la ultima pieza que doblo en la esquina
+		    //esta esquina no sirve mas
+		    //snake.corners.shift();
+		    
+		    //BUG: cuando la vibora tiene varias esquinas para hacer
+		    //la ultima pieza se va quedando atras
+		  }
+		}
+	      });
+	    //}
+
+	    piece.pos.x += piece.speed.x;
+	    piece.pos.y += piece.speed.y;
+	  });
+
+	  draw();
+  } else {
+    debugDiv.html("Game Over!");
+    gameOver = true;
   }
-  if (downDown && head.speed.y == 0){
-	  head.speed = {x: 0, y:1 };
-	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
-  }
-
-  if (leftDown && head.speed.x == 0){
-	  head.speed = {x: -1, y:0 };
-	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
-  }
-
-  if (rightDown && head.speed.x == 0){
-	  head.speed = {x: 1, y:0 };
-	  snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
-  }
-
-  if(head.pos.x >= canvas_width - snake.width || head.pos.x <= 0)
-    head.speed.x = 0;
-  if(head.pos.y <= 0 || head.pos.y >= canvas_height - snake.width)
-    head.speed.y = 0;
-
-  $.each(snake.pieces, function(indexPiece,piece){
-    if(indexPiece != 0){
-      $.each(snake.corners,function(indexCorner,corner){
-        if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
-          piece.speed.x = corner.speed.x;
-          piece.speed.y = corner.speed.y;
-        }
-      });
-    }
-
-    piece.pos.x += piece.speed.x;
-    piece.pos.y += piece.speed.y;
-  });
-
-
-  draw();
 }
 
 $(document).ready(function(){
-  //hacer que se vea lindo usando
-  // una paleta de colores de koul
   debugDiv = $("#debug");
 
   $(document).keydown(function(evt){
+   if(!gameOver){
+    rightDown = false;
+    leftDown = false;
+    upDown = false;
+    downDown = false;
+
     if (evt.keyCode == 39)
       rightDown = true;
     if (evt.keyCode == 37)
@@ -127,6 +174,7 @@ $(document).ready(function(){
       upDown = true;
     if (evt.keyCode == 40)
       downDown = true;
+   }
   });
 
   $(document).keyup(function(evt){
@@ -144,6 +192,7 @@ $(document).ready(function(){
   ctx = $('#canvas')[0].getContext("2d");
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
-  setInterval(update,15)
+  makeSnake();
+  setInterval(update,30)
 
 });
