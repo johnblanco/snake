@@ -5,7 +5,7 @@ var ctx;
 var canvas_height;
 var canvas_width;
 var debugDiv;
-var snakeLength = 100;
+var snakeLength = 200;
 var time = 0;
 var timeBetweenGrowth = 150;
 var gameOver = false;
@@ -14,11 +14,20 @@ var snake = {
   corners: [],
   pieces: [],
 };
+var horiz_impar = new Image();
+  horiz_impar.src = 'horiz_impar.png';
+var horiz_par = new Image();
+  horiz_par.src = 'horiz_par.png';
+var vert_impar = new Image();
+  vert_impar.src = 'vert_impar.png';
+var vert_par = new Image();
+  vert_par.src = 'vert_par.png';
+
 
 function makeSnake() {
   while(snakeLength > 0) {
-    snake.pieces.push({pos: {x:snakeLength, y:50},speed: {x: 1, y: 0}});
-    snakeLength--;
+    snake.pieces.push({pos: {x:snakeLength, y:50},speed: {x: 40, y: 0}});
+    snakeLength = snakeLength - 40;
   } 
 }
 
@@ -58,8 +67,6 @@ function debugInfo(){
     debugDiv.html(debugDiv.html() + value.pos.x + " , " + value.pos.y + " " +
       value.speed.x + " , " + value.speed.y + "<br/>");
   });
-
-
 }
 
 function clear() {
@@ -76,7 +83,26 @@ function draw(){
 function drawSnake(){
 //  draw snake
   $.each(snake.pieces,function(index, value){
-    ctx.fillRect(value.pos.x, value.pos.y, snake.width, snake.width);
+    var esPar = false;
+    var movHoriz = false;
+
+    if(value.pos.x % 2 == 0) esPar = true;
+    if(value.speed.x != 0) movHoriz = true; 
+    
+    if(esPar){
+      if(movHoriz){
+        ctx.drawImage(horiz_impar, value.pos.x, value.pos.y);
+      } else {
+        ctx.drawImage(vert_impar, value.pos.x, value.pos.y);
+      }
+    } else {
+      if(movHoriz){
+        ctx.drawImage(horiz_par, value.pos.x, value.pos.y); 
+      } else {
+        ctx.drawImage(vert_par, value.pos.x, value.pos.y);
+      }
+    }
+    //ctx.fillRect(value.pos.x, value.pos.y, snake.width, snake.width);
   });
   
 }
@@ -90,12 +116,12 @@ function rgbToHex(r, g, b) {
 function checkCollisions(head) {
 
   var response = false;
-  var pixel = ctx.getImageData(head.pos.x + head.speed.x, head.pos.y + head.speed.y, 1, 1).data; 
+  /*var pixel = ctx.getImageData(head.pos.x + head.speed.x, head.pos.y + head.speed.y, 1, 1).data; 
   var hex = "#" + ("000000" + rgbToHex(pixel[0], pixel[1], pixel[2])).slice(-6);
 
   if(ctx.fillStyle == hex && hex != '#000000'){
     response = true;
-  }
+  }*/
 
   if (head.pos.x >= canvas_width - snake.width || head.pos.x <= 0){
     head.speed.x = 0;
@@ -105,36 +131,33 @@ function checkCollisions(head) {
     head.speed.y = 0;
     response = true;
   }
-
   return response;
 }
+
 function checkInputs(head) {
   if (upDown && head.speed.y == 0) {
-    head.speed = {x: 0, y:-1 };
+    head.speed = {x: 0, y:-40 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
-  if (downDown && head.speed.y == 0) {
-    head.speed = {x: 0, y:1 };
+  else if (downDown && head.speed.y == 0) {
+    head.speed = {x: 0, y:40 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
-
-  if (leftDown && head.speed.x == 0) {
-    head.speed = {x: -1, y:0 };
+  else if (leftDown && head.speed.x == 0) {
+    head.speed = {x: -40, y:0 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
-
-  if (rightDown && head.speed.x == 0) {
-    head.speed = {x: 1, y:0 };
+  else if (rightDown && head.speed.x == 0) {
+    head.speed = {x: 40, y:0 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
 }
 
 function update(){
   time++;
-  //debugDiv.html("Crece en...: " + (-1)*(time - timeBetweenGrowth));
   if(time > timeBetweenGrowth){
     time = 0;
-    extendSnake(snake.pieces[snake.pieces.length-1]);
+    //extendSnake(snake.pieces[snake.pieces.length-1]);
   }
 
   var head = snake.pieces[0];
@@ -145,22 +168,21 @@ function update(){
 	  $.each(snake.pieces, function(indexPiece,piece){
 	     var isLastPiece = false;
 	       $.each(snake.corners,function(indexCorner,corner){
-		if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
+		 if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
 		  piece.speed.x = corner.speed.x;
 		  piece.speed.y = corner.speed.y;
 
 		  if(indexPiece == snake.pieces.length-1) isLastPiece = true;
-		}
-	    });
-	    if (isLastPiece) snake.corners.shift(); //debugDiv.html(snake.corners.length);
+		 }
+	       });
+	     if (isLastPiece) snake.corners.shift(); //debugDiv.html(snake.corners.length);
 
-	    piece.pos.x += piece.speed.x;
-	    piece.pos.y += piece.speed.y;
+	     piece.pos.x += piece.speed.x;
+	     piece.pos.y += piece.speed.y;
 	  });
-
 	  draw();
   } else {
-    debugDiv.html("Game Over!");
+    debugDiv.html("Game Over! Has perdido!");
     gameOver = true;
   }
 }
@@ -202,6 +224,6 @@ $(document).ready(function(){
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
   makeSnake();
-  setInterval(update,30)
+  setInterval(update,300);
 
 });
