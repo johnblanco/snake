@@ -6,13 +6,14 @@ var canvas_height;
 var canvas_width;
 var debugDiv;
 var snakeLength = 100;
+var time = 0;
+var timeBetweenGrowth = 150;
 var gameOver = false;
 var snake = {
   width: 1,
   corners: [],
   pieces: [],
 };
-
 
 function makeSnake() {
   while(snakeLength > 0) {
@@ -21,6 +22,14 @@ function makeSnake() {
   } 
 }
 
+function extendSnake(tail){
+  var extendSnakeLength = 1;
+  while(extendSnakeLength < 10){
+    snake.pieces.push({pos: {x:Math.abs(tail.pos.x - (extendSnakeLength * tail.speed.x)), y:Math.abs(tail.pos.y 
+        - (extendSnakeLength * tail.speed.y))}, speed: {x:tail.speed.x, y: tail.speed.y}});
+    extendSnakeLength++;
+  }
+}
 
 var rightDown = false;
 var leftDown = false;
@@ -121,6 +130,13 @@ function checkInputs(head) {
 }
 
 function update(){
+  time++;
+  //debugDiv.html("Crece en...: " + (-1)*(time - timeBetweenGrowth));
+  if(time > timeBetweenGrowth){
+    time = 0;
+    extendSnake(snake.pieces[snake.pieces.length-1]);
+  }
+
   var head = snake.pieces[0];
 
   checkInputs(head);
@@ -137,7 +153,7 @@ function update(){
 		}
 	    });
 	    if (isLastPiece) snake.corners.shift(); //debugDiv.html(snake.corners.length);
-	    
+
 	    piece.pos.x += piece.speed.x;
 	    piece.pos.y += piece.speed.y;
 	  });
