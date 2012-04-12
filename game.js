@@ -127,24 +127,17 @@ function update(){
   if(!checkCollisions(head)){
 
 	  $.each(snake.pieces, function(indexPiece,piece){
-	    //if(indexPiece != 0){
-	      $.each(snake.corners,function(indexCorner,corner){
+	     var isLastPiece = false;
+	       $.each(snake.corners,function(indexCorner,corner){
 		if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
 		  piece.speed.x = corner.speed.x;
 		  piece.speed.y = corner.speed.y;
 
-		  if(indexPiece == snake.pieces.length-1){
-		    //es la ultima pieza que doblo en la esquina
-		    //esta esquina no sirve mas
-		    //snake.corners.shift();
-		    
-		    //BUG: cuando la vibora tiene varias esquinas para hacer
-		    //la ultima pieza se va quedando atras
-		  }
+		  if(indexPiece == snake.pieces.length-1) isLastPiece = true;
 		}
-	      });
-	    //}
-
+	    });
+	    if (isLastPiece) snake.corners.shift(); //debugDiv.html(snake.corners.length);
+	    
 	    piece.pos.x += piece.speed.x;
 	    piece.pos.y += piece.speed.y;
 	  });
