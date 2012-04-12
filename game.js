@@ -7,7 +7,7 @@ var canvas_width;
 var debugDiv;
 var snakeLength = 200;
 var time = 0;
-var timeBetweenGrowth = 150;
+var timeBetweenGrowth = 100;
 var gameOver = false;
 var snake = {
   width: 1,
@@ -26,14 +26,14 @@ var vert_par = new Image();
 
 function makeSnake() {
   while(snakeLength > 0) {
-    snake.pieces.push({pos: {x:snakeLength, y:50},speed: {x: 40, y: 0}});
-    snakeLength = snakeLength - 40;
+    snake.pieces.push({pos: {x:snakeLength, y:50},speed: {x: 15, y: 0}});
+    snakeLength = snakeLength - 15;
   } 
 }
 
 function extendSnake(tail){
   var extendSnakeLength = 1;
-  while(extendSnakeLength < 10){
+  while(extendSnakeLength <= 1){
     snake.pieces.push({pos: {x:Math.abs(tail.pos.x - (extendSnakeLength * tail.speed.x)), y:Math.abs(tail.pos.y 
         - (extendSnakeLength * tail.speed.y))}, speed: {x:tail.speed.x, y: tail.speed.y}});
     extendSnakeLength++;
@@ -136,19 +136,19 @@ function checkCollisions(head) {
 
 function checkInputs(head) {
   if (upDown && head.speed.y == 0) {
-    head.speed = {x: 0, y:-40 };
+    head.speed = {x: 0, y:-15 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
   else if (downDown && head.speed.y == 0) {
-    head.speed = {x: 0, y:40 };
+    head.speed = {x: 0, y:15 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
   else if (leftDown && head.speed.x == 0) {
-    head.speed = {x: -40, y:0 };
+    head.speed = {x: -15, y:0 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
   else if (rightDown && head.speed.x == 0) {
-    head.speed = {x: 40, y:0 };
+    head.speed = {x: 15, y:0 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
 }
@@ -157,7 +157,7 @@ function update(){
   time++;
   if(time > timeBetweenGrowth){
     time = 0;
-    //extendSnake(snake.pieces[snake.pieces.length-1]);
+    extendSnake(snake.pieces[snake.pieces.length-1]);
   }
 
   var head = snake.pieces[0];
@@ -224,6 +224,6 @@ $(document).ready(function(){
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
   makeSnake();
-  setInterval(update,300);
+  setInterval(update,100);
 
 });
