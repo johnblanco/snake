@@ -200,6 +200,13 @@ $(document).ready(function() {
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
   makeSnake();
-  setInterval(update,30)
+
+  var loop = setInterval(function() {
+    if (gameOver) {
+      clearInterval(loop);
+    } else {
+      update();
+    }
+  }, 30);
 
 });
