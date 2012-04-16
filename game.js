@@ -1,31 +1,7 @@
 //jquery cdn: http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
 //jquery local: jquery-1.7.2.js
 
-var Debug = function($container) {
-  this.$container = $container;
-};
-Debug.prototype.print = function(string) {
-  console.log(string);
-};
-Debug.prototype.showInfo = function(snake) {
-  debug.print("---PIECES---");
-
-  $.each(snake.pieces,function(index,value){
-    debug.print(value.pos.x + " , " + value.pos.y);
-  });
-
-  debug.print("---SPEED---");
-  debug.print(snake.pieces[0].speed.x + " , " + snake.pieces[0].speed.y);
-
-  debug.print("---CORNERS---");
-  $.each(snake.corners,function(index,value){
-    debug.print(value.pos.x + " , " + value.pos.y + " " +
-      value.speed.x + " , " + value.speed.y);
-  });
-};
-
 var debug = null;
-
 var ctx;
 var canvas_height;
 var canvas_width;
