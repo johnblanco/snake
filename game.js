@@ -1,12 +1,37 @@
 //jquery cdn: http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
 //jquery local: jquery-1.7.2.js
 
+var Debug = function($container) {
+  this.$container = $container;
+};
+Debug.prototype.print = function(string) {
+  console.log(string);
+};
+Debug.prototype.showInfo = function(snake) {
+  debug.print("---PIECES---");
+
+  $.each(snake.pieces,function(index,value){
+    debug.print(value.pos.x + " , " + value.pos.y);
+  });
+
+  debug.print("---SPEED---");
+  debug.print(snake.pieces[0].speed.x + " , " + snake.pieces[0].speed.y);
+
+  debug.print("---CORNERS---");
+  $.each(snake.corners,function(index,value){
+    debug.print(value.pos.x + " , " + value.pos.y + " " +
+      value.speed.x + " , " + value.speed.y);
+  });
+};
+
+var debug = null;
+
 var ctx;
 var canvas_height;
 var canvas_width;
-var debugDiv;
 var snakeLength = 100;
 var gameOver = false;
+
 var snake = {
   width: 1,
   corners: [],
@@ -35,24 +60,6 @@ function drawMap() {
   ctx.fillRect(canvas_width-2, 0, 2, canvas_height);
 }
 
-function debugInfo(){
-  debugDiv.html("---PIECES---</br>");
-  $.each(snake.pieces,function(index,value){
-    debugDiv.html(debugDiv.html() + value.pos.x + " , " + value.pos.y + "<br/>");
-  });
-
-  debugDiv.html(debugDiv.html() + "---SPEED---</br>");
-  debugDiv.html(debugDiv.html() + snake.pieces[0].speed.x + " , " + snake.pieces[0].speed.y + "<br/>");
-
-  debugDiv.html(debugDiv.html() + "---CORNERS---</br>");
-  $.each(snake.corners,function(index,value){
-    debugDiv.html(debugDiv.html() + value.pos.x + " , " + value.pos.y + " " +
-      value.speed.x + " , " + value.speed.y + "<br/>");
-  });
-
-
-}
-
 function clear() {
   ctx.clearRect(0, 0, canvas_width, canvas_height);
 }
@@ -61,7 +68,7 @@ function draw(){
   clear();
   drawMap();
   drawSnake();
-  //debugInfo();
+  // debug.showInfo(snake);
 }
 
 function drawSnake(){
@@ -124,7 +131,7 @@ function update(){
   var head = snake.pieces[0];
 
   checkInputs(head);
-  if(!checkCollisions(head)){
+  if (!checkCollisions(head)) {
 
 	  $.each(snake.pieces, function(indexPiece,piece){
 	    //if(indexPiece != 0){
@@ -151,13 +158,13 @@ function update(){
 
 	  draw();
   } else {
-    debugDiv.html("Game Over!");
+    debug.print("Game Over!");
     gameOver = true;
   }
 }
 
-$(document).ready(function(){
-  debugDiv = $("#debug");
+$(document).ready(function() {
+  debug = new Debug($("#debug"));
 
   $(document).keydown(function(evt){
    if(!gameOver){
