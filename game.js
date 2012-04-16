@@ -5,22 +5,8 @@ var debug = null;
 var ctx;
 var canvas_height;
 var canvas_width;
-var snakeLength = 100;
 var gameOver = false;
-
-var snake = {
-  width: 1,
-  corners: [],
-  pieces: [],
-};
-
-
-function makeSnake() {
-  while(snakeLength > 0) {
-    snake.pieces.push({pos: {x:snakeLength, y:50},speed: {x: 1, y: 0}});
-    snakeLength--;
-  } 
-}
+var snake = null;
 
 
 var rightDown = false;
@@ -32,18 +18,18 @@ function drawMap() {
   ctx.fillStyle = "rgb(200,0,0)";
   ctx.fillRect(0, 0, canvas_width, 2);
   ctx.fillRect(0, 0, 2, canvas_height);
-  ctx.fillRect(0, canvas_height-2, canvas_width, 2);
-  ctx.fillRect(canvas_width-2, 0, 2, canvas_height);
+  ctx.fillRect(0, canvas_height - 2, canvas_width, 2);
+  ctx.fillRect(canvas_width - 2, 0, 2, canvas_height);
 }
 
 function clear() {
   ctx.clearRect(0, 0, canvas_width, canvas_height);
 }
 
-function draw(){
+function draw() {
   clear();
   drawMap();
-  drawSnake();
+  snake.draw();
   // debug.showInfo(snake);
 }
 
@@ -141,6 +127,7 @@ function update(){
 
 $(document).ready(function() {
   debug = new Debug($("#debug"));
+  snake = new Snake(100);
 
   $(document).keydown(function(evt){
    if(!gameOver){
@@ -175,7 +162,8 @@ $(document).ready(function() {
   ctx = $('#canvas')[0].getContext("2d");
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
-  makeSnake();
+  snake.assignMap(ctx);
+  snake.make();
 
   var loop = setInterval(function() {
     if (gameOver) {
