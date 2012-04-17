@@ -1,10 +1,25 @@
-var Snake = function(length, control) {
+var Point = function(x, y) {
+  this.x = x;
+  this.y = y;
+};
+
+Point.at = function(x, y) {
+  return new Point(x, y);
+};
+
+
+var Snake = function(position, length, control) {
   this.width = 1;
   this.corners = [];
   this.pieces = [];
   this.snakeLength = length;
   var snake = this;
   
+  while(this.snakeLength > 0) {
+    this.pieces.push({pos: {x: position.x + this.snakeLength, y: position.y}, speed: {x: 1, y: 0}});
+    this.snakeLength--;
+  }
+
   control.hDir.bind("directionChange", function() {
     var head = snake.pieces[0];
     if (this.goingLeft() && head.speed.x == 0) {
@@ -33,18 +48,18 @@ var Snake = function(length, control) {
 Snake.prototype.checkCollisions = function(object) {
   var head = this.pieces[0];
   var collision = false;
-  var pixel = ctx.getImageData(head.pos.x + head.speed.x, head.pos.y + head.speed.y, 1, 1).data; 
+  var pixel = this.map.ctx.getImageData(head.pos.x + head.speed.x, head.pos.y + head.speed.y, 1, 1).data; 
   var hex = "#" + ("000000" + rgbToHex(pixel[0], pixel[1], pixel[2])).slice(-6);
 
-  if (ctx.fillStyle == hex && hex != '#000000') {
+  if (this.map.ctx.fillStyle == hex && hex != '#000000') {
     collision = true;
   }
 
-  if (head.pos.x >= canvas_width - snake.width || head.pos.x <= 0) {
+  if (head.pos.x >= this.map.width - this.width || head.pos.x <= 0) {
     head.speed.x = 0;
     collision = true;
   }
-  if (head.pos.y <= 0 || head.pos.y >= canvas_height - snake.width) {
+  if (head.pos.y <= 0 || head.pos.y >= this.map.height - this.width) {
     head.speed.y = 0;
     collision = true;
   }
@@ -57,20 +72,13 @@ Snake.prototype.checkCollisions = function(object) {
 };
 
 Snake.prototype.assignMap = function(map) {
-  this.ctx = map;
-};
-
-Snake.prototype.make = function() {
-  while(this.snakeLength > 0) {
-    this.pieces.push({pos: {x: this.snakeLength, y: 50}, speed: {x: 1, y: 0}});
-    this.snakeLength--;
-  }
+  this.map = map;
 };
 
 Snake.prototype.draw = function() {
   var snake = this;
   _.each(this.pieces, function(value) {
-    snake.ctx.fillRect(value.pos.x, value.pos.y, snake.width, snake.width);
+    snake.map.ctx.fillRect(value.pos.x, value.pos.y, snake.width, snake.width);
   });
 };
 
