@@ -2,7 +2,7 @@ var Debug = function($container) {
   this.$container = $container;
 };
 Debug.prototype.print = function(string) {
-  console.log(string);
+  this.$container.html(this.$container.html() + string + "<br />");
 };
 Debug.prototype.showInfo = function(snake) {
   debug.print("---PIECES---");
