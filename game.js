@@ -21,58 +21,17 @@ function clear() {
   ctx.clearRect(0, 0, canvas_width, canvas_height);
 }
 
-function draw() {
-  clear();
-  drawMap();
-  snake.draw();
-  // debug.showInfo(snake);
-}
-
-function drawSnake(){
-//  draw snake
-  $.each(snake.pieces,function(index, value){
-    ctx.fillRect(value.pos.x, value.pos.y, snake.width, snake.width);
-  });
-  
-}
-
 function rgbToHex(r, g, b) {
     if (r > 255 || g > 255 || b > 255)
         throw "Invalid color component";
     return ((r << 16) | (g << 8) | b).toString(16);
 }
 
-
-
-function update(){
-  var head = snake.pieces[0];
-
+function update() {
+  clear();
+  drawMap();
+  snake.moveForward();
   snake.checkCollisions(snake);
-
-  $.each(snake.pieces, function(indexPiece,piece){
-    //if(indexPiece != 0){
-      $.each(snake.corners,function(indexCorner,corner){
-	if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
-	  piece.speed.x = corner.speed.x;
-	  piece.speed.y = corner.speed.y;
-
-	  if(indexPiece == snake.pieces.length-1){
-	    //es la ultima pieza que doblo en la esquina
-	    //esta esquina no sirve mas
-	    //snake.corners.shift();
-	    
-	    //BUG: cuando la vibora tiene varias esquinas para hacer
-	    //la ultima pieza se va quedando atras
-	  }
-	}
-      });
-    //}
-
-    piece.pos.x += piece.speed.x;
-    piece.pos.y += piece.speed.y;
-  });
-
-  draw();
 }
 
 $(function() {
