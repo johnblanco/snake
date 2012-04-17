@@ -1,39 +1,87 @@
+var moveable = function(directions) {
+
+  var moving = false, _dir = "", obj = {
+    startMoving: function(to) {
+      if (!moving) {
+        this.trigger("startMoving", this);
+        moving = true;
+      }
+    },
+    endMoving: function(to) {
+      if (moving) {
+        _dir = "";
+        this.trigger("endMoving", this);
+        moving = false;
+      }
+    },
+    isMoving: function() {
+      return moving;
+    }
+  };
+  _.extend(obj, Backbone.Events);
+
+  _.each(directions, function(direction) {
+    var camelDir = direction;
+    camelDir = direction[0].toUpperCase() + direction.slice(1);
+    obj["go" + camelDir] = function() {
+      if (_dir != direction) {
+        _dir = direction;
+        this.startMoving();
+        this.trigger("directionChange", this);
+      }
+    };
+    obj["endGoing" + camelDir] = function() {
+      if (_dir == direction) {
+        _dir = "";
+        this.endMoving();
+      }
+    };
+    obj["going" + camelDir] = function() {
+      return this.isMoving() && _dir == direction;
+    };
+  });
+
+  return obj;
+};
+
+var horizontalDirection = function() { return moveable(["left", "right"]); };
+var verticalDirecction = function() { return moveable(["up", "down"]); }
 
 var Control = function() {
+  this.vDir = verticalDirecction();
+  this.hDir = horizontalDirection();
   this.reset();
 };
 
 Control.prototype.reset = function() {
-  this.right = false;
-  this.left = false;
-  this.up = false;
-  this.down = false;
+  this.hDir.endMoving();
+  this.vDir.endMoving();
 };
 
 Control.prototype.keyDown = function(keyCode) {
   this.reset();
 
   if (keyCode == 39) {
-    this.right = true;
+    this.hDir.goRight();
   } else if (keyCode == 37) {
-    this.left = true;
+    this.hDir.goLeft();
   }
   if (keyCode == 38) {
-    this.up = true;
+    this.vDir.goUp();
   } else if (keyCode == 40) {
-    this.down = true;
+    this.vDir.goDown();
   }
 };
 
 Control.prototype.keyUp = function(keyCode) {
   if (keyCode == 39) {
-    this.right = false;
+    this.hDir.endGoingRight();
   } else if (keyCode == 37) {
-    this.left = false;
+    this.hDir.endGoingLeft();
   }
   if (keyCode == 38) {
-    this.up = false;
+    this.vDir.endGoingUp();
   } else  if (keyCode == 40) {
-    this.down = false;
+    this.vDir.endGoingDown();
   }
 };

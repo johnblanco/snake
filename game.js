@@ -63,31 +63,10 @@ function checkCollisions(head) {
 
   return response;
 }
-function checkInputs(head) {
-  if (control.up && head.speed.y == 0) {
-    head.speed = {x: 0, y:-1 };
-    snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
-  }
-  if (control.down && head.speed.y == 0) {
-    head.speed = {x: 0, y:1 };
-    snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
-  }
-
-  if (control.left && head.speed.x == 0) {
-    head.speed = {x: -1, y:0 };
-    snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
-  }
-
-  if (control.right && head.speed.x == 0) {
-    head.speed = {x: 1, y:0 };
-    snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
-  }
-}
 
 function update(){
   var head = snake.pieces[0];
 
-  checkInputs(head);
   if (!checkCollisions(head)) {
 
 	  $.each(snake.pieces, function(indexPiece,piece){
@@ -120,10 +99,10 @@ function update(){
   }
 }
 
-$(document).ready(function() {
+$(function() {
   debug = new Debug($("#debug"));
-  snake = new Snake(100);
   control = new Control();
+  snake = new Snake(100, control);
 
   $(document).keydown(function(evt){
     if(!gameOver){
