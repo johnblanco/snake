@@ -58,30 +58,35 @@ Control.prototype.reset = function() {
   this.vDir.endMoving();
 };
 
-Control.prototype.keyDown = function(keyCode) {
-  this.reset();
+var keyboardController = function() {
+  var obj = new Control();
 
-  if (keyCode == 39) {
-    this.hDir.goRight();
-  } else if (keyCode == 37) {
-    this.hDir.goLeft();
-  }
-  if (keyCode == 38) {
-    this.vDir.goUp();
-  } else if (keyCode == 40) {
-    this.vDir.goDown();
-  }
-};
+  obj.keyDown = function(keyCode) {
+    this.reset();
 
-Control.prototype.keyUp = function(keyCode) {
-  if (keyCode == 39) {
-    this.hDir.endGoingRight();
-  } else if (keyCode == 37) {
-    this.hDir.endGoingLeft();
-  }
-  if (keyCode == 38) {
-    this.vDir.endGoingUp();
-  } else  if (keyCode == 40) {
-    this.vDir.endGoingDown();
-  }
+    if (keyCode == 39) {
+      this.hDir.goRight();
+    } else if (keyCode == 37) {
+      this.hDir.goLeft();
+    }
+    if (keyCode == 38) {
+      this.vDir.goUp();
+    } else if (keyCode == 40) {
+      this.vDir.goDown();
+    }
+  };
+
+  obj.keyUp = function(keyCode) {
+    if (keyCode == 39) {
+      this.hDir.endGoingRight();
+    } else if (keyCode == 37) {
+      this.hDir.endGoingLeft();
+    }
+    if (keyCode == 38) {
+      this.vDir.endGoingUp();
+    } else  if (keyCode == 40) {
+      this.vDir.endGoingDown();
+    }
+  };
+  return obj;
 };

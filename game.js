@@ -34,7 +34,7 @@ $(function() {
 
   var map = new Map($("#canvas"));
   var debug = new Debug($("#debug"));
-  var control = new Control();
+  var control = keyboardController();
 
   var snake = new Snake(Point.at(10, 10), 100, control);
   snake.assignMap(map);
@@ -44,13 +44,13 @@ $(function() {
     debug.print("Game Over!");
   });
 
-  $(document).keydown(function(evt){
+  $(document).keydown(function(evt) {
     if(!gameOver){
       control.keyDown(evt.keyCode);
     }
   });
 
-  $(document).keyup(function(evt){
+  $(document).keyup(function(evt) {
     control.keyUp(evt.keyCode)
   });
 
