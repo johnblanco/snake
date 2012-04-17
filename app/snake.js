@@ -30,6 +30,32 @@ var Snake = function(length, control) {
   });
 };
 
+Snake.prototype.checkCollisions = function(object) {
+  var head = this.pieces[0];
+  var collision = false;
+  var pixel = ctx.getImageData(head.pos.x + head.speed.x, head.pos.y + head.speed.y, 1, 1).data; 
+  var hex = "#" + ("000000" + rgbToHex(pixel[0], pixel[1], pixel[2])).slice(-6);
+
+  if (ctx.fillStyle == hex && hex != '#000000') {
+    collision = true;
+  }
+
+  if (head.pos.x >= canvas_width - snake.width || head.pos.x <= 0) {
+    head.speed.x = 0;
+    collision = true;
+  }
+  if (head.pos.y <= 0 || head.pos.y >= canvas_height - snake.width) {
+    head.speed.y = 0;
+    collision = true;
+  }
+
+  if (collision) {
+    this.trigger("collision", object);
+  }
+
+  return collision;
+};
+
 Snake.prototype.assignMap = function(map) {
   this.ctx = map;
 };
@@ -48,3 +74,4 @@ Snake.prototype.draw = function() {
   });
 };
 
+_.extend(Snake.prototype, Backbone.Events);

@@ -42,67 +42,48 @@ function rgbToHex(r, g, b) {
     return ((r << 16) | (g << 8) | b).toString(16);
 }
 
-function checkCollisions(head) {
 
-  var response = false;
-  var pixel = ctx.getImageData(head.pos.x + head.speed.x, head.pos.y + head.speed.y, 1, 1).data; 
-  var hex = "#" + ("000000" + rgbToHex(pixel[0], pixel[1], pixel[2])).slice(-6);
-
-  if(ctx.fillStyle == hex && hex != '#000000'){
-    response = true;
-  }
-
-  if (head.pos.x >= canvas_width - snake.width || head.pos.x <= 0){
-    head.speed.x = 0;
-    response = true;
-  }
-  if (head.pos.y <= 0 || head.pos.y >= canvas_height - snake.width){
-    head.speed.y = 0;
-    response = true;
-  }
-
-  return response;
-}
 
 function update(){
   var head = snake.pieces[0];
 
-  if (!checkCollisions(head)) {
+  snake.checkCollisions(snake);
 
-	  $.each(snake.pieces, function(indexPiece,piece){
-	    //if(indexPiece != 0){
-	      $.each(snake.corners,function(indexCorner,corner){
-		if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
-		  piece.speed.x = corner.speed.x;
-		  piece.speed.y = corner.speed.y;
+  $.each(snake.pieces, function(indexPiece,piece){
+    //if(indexPiece != 0){
+      $.each(snake.corners,function(indexCorner,corner){
+	if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
+	  piece.speed.x = corner.speed.x;
+	  piece.speed.y = corner.speed.y;
 
-		  if(indexPiece == snake.pieces.length-1){
-		    //es la ultima pieza que doblo en la esquina
-		    //esta esquina no sirve mas
-		    //snake.corners.shift();
-		    
-		    //BUG: cuando la vibora tiene varias esquinas para hacer
-		    //la ultima pieza se va quedando atras
-		  }
-		}
-	      });
-	    //}
+	  if(indexPiece == snake.pieces.length-1){
+	    //es la ultima pieza que doblo en la esquina
+	    //esta esquina no sirve mas
+	    //snake.corners.shift();
+	    
+	    //BUG: cuando la vibora tiene varias esquinas para hacer
+	    //la ultima pieza se va quedando atras
+	  }
+	}
+      });
+    //}
 
-	    piece.pos.x += piece.speed.x;
-	    piece.pos.y += piece.speed.y;
-	  });
+    piece.pos.x += piece.speed.x;
+    piece.pos.y += piece.speed.y;
+  });
 
-	  draw();
-  } else {
-    debug.print("Game Over!");
-    gameOver = true;
-  }
+  draw();
 }
 
 $(function() {
   debug = new Debug($("#debug"));
   control = new Control();
   snake = new Snake(100, control);
+
+  snake.bind("collision", function() {
+    gameOver = true;
+    debug.print("Game Over!");
+  });
 
   $(document).keydown(function(evt){
     if(!gameOver){
