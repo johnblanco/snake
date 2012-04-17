@@ -7,12 +7,7 @@ var canvas_height;
 var canvas_width;
 var gameOver = false;
 var snake = null;
-
-
-var rightDown = false;
-var leftDown = false;
-var upDown = false;
-var downDown = false;
+var control = null;
 
 function drawMap() {
   ctx.fillStyle = "rgb(200,0,0)";
@@ -69,21 +64,21 @@ function checkCollisions(head) {
   return response;
 }
 function checkInputs(head) {
-  if (upDown && head.speed.y == 0) {
+  if (control.up && head.speed.y == 0) {
     head.speed = {x: 0, y:-1 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
-  if (downDown && head.speed.y == 0) {
+  if (control.down && head.speed.y == 0) {
     head.speed = {x: 0, y:1 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
 
-  if (leftDown && head.speed.x == 0) {
+  if (control.left && head.speed.x == 0) {
     head.speed = {x: -1, y:0 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
 
-  if (rightDown && head.speed.x == 0) {
+  if (control.right && head.speed.x == 0) {
     head.speed = {x: 1, y:0 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
@@ -128,34 +123,16 @@ function update(){
 $(document).ready(function() {
   debug = new Debug($("#debug"));
   snake = new Snake(100);
+  control = new Control();
 
   $(document).keydown(function(evt){
-   if(!gameOver){
-    rightDown = false;
-    leftDown = false;
-    upDown = false;
-    downDown = false;
-
-    if (evt.keyCode == 39)
-      rightDown = true;
-    if (evt.keyCode == 37)
-      leftDown = true;
-    if (evt.keyCode == 38)
-      upDown = true;
-    if (evt.keyCode == 40)
-      downDown = true;
-   }
+    if(!gameOver){
+      control.keyDown(evt.keyCode);
+    }
   });
 
   $(document).keyup(function(evt){
-    if (evt.keyCode == 39)
-      rightDown = false;
-    if (evt.keyCode == 37)
-      leftDown = false;
-    if (evt.keyCode == 38)
-      upDown = false;
-    if (evt.keyCode == 40)
-      downDown = false;
+    control.keyUp(evt.keyCode)
   });
 
 
