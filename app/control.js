@@ -90,3 +90,26 @@ var keyboardController = function() {
   };
   return obj;
 };
+
+var randomController = function() {
+  var obj = new Control();
+  obj.randomlyChange = function() {
+    if (this.hDir.goingRight()) {
+      this.hDir.endGoingRight();
+      this.vDir.goDown();
+    } else if (this.hDir.goingLeft()) {
+      this.hDir.endGoingLeft();
+      this.vDir.goUp();
+    } else if (this.vDir.goingUp()) {
+      this.vDir.endGoingUp();
+      this.hDir.goRight();
+    } else if (this.vDir.goingDown()) {
+      this.vDir.endGoingDown();
+      this.hDir.goLeft();
+    } else {
+      this.vDir.goDown();
+    }
+  };
+
+  return obj;
+};
