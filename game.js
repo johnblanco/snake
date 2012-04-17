@@ -17,6 +17,14 @@ $(function() {
   var snake = new Snake(Point.at(10, 10), 100, control);
   snake.assignMap(map);
 
+  var rControl = randomController();
+  var snake2 = new Snake(Point.at(10, 30), 100, rControl);
+  snake2.assignMap(map);
+
+  setInterval(function() {
+    rControl.randomlyChange();
+  }, 3000);
+  
   snake.bind("collision", function() {
     gameOver = true;
     debug.print("Game Over!");
@@ -38,7 +46,9 @@ $(function() {
     } else {
       map.draw();
       snake.moveForward();
+      snake2.moveForward();
       snake.checkCollisions(snake);
+      snake2.checkCollisions(snake);
     }
   }, 30);
 
