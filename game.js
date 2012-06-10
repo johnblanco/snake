@@ -1,12 +1,6 @@
 //jquery cdn: http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
 //jquery local: jquery-1.7.2.js
 
-function rgbToHex(r, g, b) {
-  if (r > 255 || g > 255 || b > 255)
-    throw "Invalid color component";
-  return ((r << 16) | (g << 8) | b).toString(16);
-}
-
 $(function() {
   var gameOver = false;
 
@@ -38,7 +32,7 @@ $(function() {
     } else {
       map.draw();
       snake.moveForward();
-      snake.checkCollisions(snake);
+      snake.checkCollisions();
     }
   }, 30);
 

@@ -9,7 +9,7 @@ Point.at = function(x, y) {
 
 
 var Snake = function(position, length, control) {
-  this.width = 1;
+  this.width = 5;
   this.corners = [];
   this.pieces = [];
   this.snakeLength = length;
@@ -48,21 +48,19 @@ var Snake = function(position, length, control) {
 Snake.prototype.checkCollisions = function(object) {
   var head = this.pieces[0];
   var collision = false;
-  var pixel = this.map.ctx.getImageData(head.pos.x + head.speed.x, head.pos.y + head.speed.y, 1, 1).data; 
-  var hex = "#" + ("000000" + rgbToHex(pixel[0], pixel[1], pixel[2])).slice(-6);
-
-  if (this.map.ctx.fillStyle == hex && hex != '#000000') {
-    collision = true;
-  }
 
   if (head.pos.x >= this.map.width - this.width || head.pos.x <= 0) {
-    head.speed.x = 0;
     collision = true;
   }
   if (head.pos.y <= 0 || head.pos.y >= this.map.height - this.width) {
-    head.speed.y = 0;
     collision = true;
   }
+
+  _.each(this.pieces, function(element, index) {
+    if(index != 0 && element.pos.x == head.pos.x && element.pos.y == head.pos.y){
+      collision = true;
+    }
+  });
 
   if (collision) {
     this.trigger("collision", object);
