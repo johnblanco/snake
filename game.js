@@ -8,14 +8,14 @@ var debugDiv;
 var snake = {
   width: 5,
   pieces: [
-    {pos: {x:50, y:50}, speed: {x:1, y:0}},
-    {pos: {x:45, y:50}, speed: {x:1, y:0}},
-    {pos: {x:40, y:50}, speed: {x:1, y:0}},
-    {pos: {x:35, y:50}, speed: {x:1, y:0}},
-    {pos: {x:30, y:50}, speed: {x:1, y:0}},
-    {pos: {x:25, y:50}, speed: {x:1, y:0}},
-    {pos: {x:20, y:50}, speed: {x:1, y:0}},
-    {pos: {x:15, y:50}, speed: {x:1, y:0}}
+    {pos: {x:50, y:50}, speed: {x:5, y:0}},
+    {pos: {x:45, y:50}, speed: {x:5, y:0}},
+    {pos: {x:40, y:50}, speed: {x:5, y:0}},
+    {pos: {x:35, y:50}, speed: {x:5, y:0}},
+    {pos: {x:30, y:50}, speed: {x:5, y:0}},
+    {pos: {x:25, y:50}, speed: {x:5, y:0}},
+    {pos: {x:20, y:50}, speed: {x:5, y:0}},
+    {pos: {x:15, y:50}, speed: {x:5, y:0}}
   ],
   corners: []
 };
@@ -49,21 +49,11 @@ function drawMap() {
 }
 
 function debugInfo(){
-  debugDiv.html("---PIECES---</br>");
+  var textY = 300;
   $.each(snake.pieces,function(index,value){
-    debugDiv.html(debugDiv.html() + value.pos.x + " , " + value.pos.y + "<br/>");
+    ctx.fillText(value.pos.x + " , " + value.pos.y , 560, textY);
+    textY += 20;
   });
-
-  debugDiv.html(debugDiv.html() + "---SPEED---</br>");
-  debugDiv.html(debugDiv.html() + snake.pieces[0].speed.x + " , " + snake.pieces[0].speed.y + "<br/>");
-
-  debugDiv.html(debugDiv.html() + "---CORNERS---</br>");
-  $.each(snake.corners,function(index,value){
-    debugDiv.html(debugDiv.html() + value.pos.x + " , " + value.pos.y + " " +
-      value.speed.x + " , " + value.speed.y + "<br/>");
-  });
-
-
 }
 
 function clear() {
@@ -74,7 +64,7 @@ function draw(){
   clear();
   drawMap();
   drawSnake();
-  //debugInfo();
+  debugInfo();
 }
 
 function drawSnake(){
@@ -92,21 +82,21 @@ function checkCollisions(head) {
 }
 function checkInputs(head) {
   if (upDown && head.speed.y == 0) {
-    head.speed = {x: 0, y:-1 };
+    head.speed = {x: 0, y:-5 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
   if (downDown && head.speed.y == 0) {
-    head.speed = {x: 0, y:1 };
+    head.speed = {x: 0, y:5 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
 
   if (leftDown && head.speed.x == 0) {
-    head.speed = {x: -1, y:0 };
+    head.speed = {x: -5, y:0 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
 
   if (rightDown && head.speed.x == 0) {
-    head.speed = {x: 1, y:0 };
+    head.speed = {x: 5, y:0 };
     snake.corners.push({pos: {x:head.pos.x, y:head.pos.y},speed: {x: head.speed.x, y: head.speed.y}});
   }
 }
@@ -122,6 +112,7 @@ function update(){
     if(indexPiece != 0){
       $.each(snake.corners,function(indexCorner,corner){
         if(piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y){
+
           piece.speed.x = corner.speed.x;
           piece.speed.y = corner.speed.y;
 
@@ -178,6 +169,6 @@ $(document).ready(function(){
   ctx = $('#canvas')[0].getContext("2d");
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
-  setInterval(update,30)
+  setInterval(update, 90);
 
 });
