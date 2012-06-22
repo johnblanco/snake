@@ -5,6 +5,7 @@ var ctx;
 var canvas_height;
 var canvas_width;
 var debugDiv;
+
 var snake = {
   width: 5,
   pieces: [
@@ -166,9 +167,12 @@ $(document).ready(function(){
   });
 
 
-  ctx = $('#canvas')[0].getContext("2d");
-  canvas_width = $("#canvas").attr("width");
-  canvas_height = $("#canvas").attr("height");
-  setInterval(update, 90);
+  var broccoli = new Vegetable("green");
+  console.log("Broccoli is " + broccoli.color + "!"); // will print "Broccoli is green!"
+
+//  ctx = $('#canvas')[0].getContext("2d");
+//  canvas_width = $("#canvas").attr("width");
+//  canvas_height = $("#canvas").attr("height");
+//  setInterval(update, 90);
 
 });
