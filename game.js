@@ -6,20 +6,8 @@ var canvas_height;
 var canvas_width;
 var debugDiv;
 
-var snake = {
-  width: 5,
-  pieces: [
-    {pos: {x:50, y:50}, speed: {x:5, y:0}},
-    {pos: {x:45, y:50}, speed: {x:5, y:0}},
-    {pos: {x:40, y:50}, speed: {x:5, y:0}},
-    {pos: {x:35, y:50}, speed: {x:5, y:0}},
-    {pos: {x:30, y:50}, speed: {x:5, y:0}},
-    {pos: {x:25, y:50}, speed: {x:5, y:0}},
-    {pos: {x:20, y:50}, speed: {x:5, y:0}},
-    {pos: {x:15, y:50}, speed: {x:5, y:0}}
-  ],
-  corners: []
-};
+var snake = new Snake();
+
 var maps = [
   {foods: [
     {x:165, y: 205},
@@ -166,13 +154,9 @@ $(document).ready(function(){
       downDown = false;
   });
 
-
-  var broccoli = new Vegetable("green");
-  console.log("Broccoli is " + broccoli.color + "!"); // will print "Broccoli is green!"
-
-//  ctx = $('#canvas')[0].getContext("2d");
-//  canvas_width = $("#canvas").attr("width");
-//  canvas_height = $("#canvas").attr("height");
-//  setInterval(update, 90);
+  ctx = $('#canvas')[0].getContext("2d");
+  canvas_width = $("#canvas").attr("width");
+  canvas_height = $("#canvas").attr("height");
+  setInterval(update, 90);
 
 });
