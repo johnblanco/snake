@@ -12,3 +12,6 @@ Tareas restantes...
 * agregar musica
 
 
+TODO:
+-----
+agregar require.js
