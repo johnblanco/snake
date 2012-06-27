@@ -6,36 +6,23 @@ var canvas_height;
 var canvas_width;
 var keyboardState;
 var snake = new Snake();
+var timer;
+var gameStatus = "menu";
 
-var maps = [
-  {foods: [
-    {x:165, y: 205},
-    {x:205, y: 105}
-  ]}
-];
-
-var currentMap = 0;
-var currentFood = 0;
-
-function drawMap() {
-  ctx.fillStyle = "rgb(200,0,0)";
-  ctx.fillRect(0, 0, canvas_width, 2);
-  ctx.fillRect(0, 0, 2, canvas_height);
-  ctx.fillRect(0, canvas_height-2, canvas_width, 2);
-  ctx.fillRect(canvas_width-2, 0, 2, canvas_height);
-
-  var foodPos = {x: maps[currentMap].foods[currentFood].x, y:maps[currentMap].foods[currentFood].y};
-  ctx.beginPath();
-  ctx.arc(foodPos.x, foodPos.y, 5, 0, Math.PI*2, true);
-  ctx.closePath();
-  ctx.fill();
-  
-}
+var levels = [new Level([],[new Vector(165,205),new Vector(205,105)]),
+              new Level([],[new Vector(50,50),new Vector(100,100)])];
+var currentLevel = 0;
 
 function debugInfo(){
   var textY = 300;
   $.each(snake.pieces,function(index,value){
-    ctx.fillText(value.pos.x + " , " + value.pos.y , 560, textY);
+    ctx.fillText(value.pos.x + " , " + value.pos.y , 540, textY);
+    textY += 20;
+  });
+
+  textY = 300;
+  $.each(snake.corners,function(index,value){
+    ctx.fillText(value.pos.x + " , " + value.pos.y , 590, textY);
     textY += 20;
   });
 }
@@ -44,16 +31,36 @@ function clear() {
   ctx.clearRect(0, 0, canvas_width, canvas_height);
 }
 
-function draw(){
+function drawPlaying(){
   clear();
-  drawMap();
+  //draw level
+  levels[currentLevel].draw(ctx, canvas_width, canvas_height);
+  //draw snake
   snake.draw(ctx);
   debugInfo();
 }
 
+function drawMenu(){
+  clear();
+  ctx.fillText("Press 's' to start game.",50,50);
+}
+
 function update(){
-  snake.update(canvas_width, canvas_height, keyboardState);
-  draw();
+  switch(gameStatus){
+    case "menu":
+      drawMenu();
+      if(keyboardState.sDown)
+        gameStatus = "playing";
+      break;
+    case "playing":
+      snake.update(canvas_width, canvas_height, levels[currentLevel], keyboardState);
+      drawPlaying();
+      if(keyboardState.pDown)
+        snake.pause();
+      break;
+    case "gameover":
+    break;
+  }
 }
 
 $(document).ready(function(){
@@ -70,6 +77,13 @@ $(document).ready(function(){
       keyboardState.upDown = true;
     if (evt.keyCode == 40)
       keyboardState.downDown = true;
+    if(evt.keyCode == 83){ // s key
+      keyboardState.sDown = true;
+    }
+    if(evt.keyCode == 80){ // p key
+      keyboardState.pDown = true;
+    }
+
   });
 
   $(document).keyup(function(evt){
@@ -79,6 +93,6 @@ $(document).ready(function(){
   ctx = $('#canvas')[0].getContext("2d");
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
-  setInterval(update, 90);
+  timer = setInterval(update, 30);
 
 });

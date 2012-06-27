@@ -3,4 +3,6 @@ var KeyboardState = function(){
   this.rightDown = false;
   this.downDown = false;
   this.leftDown = false;
+  this.pDown = false;
+  this.sDown = false;
 }

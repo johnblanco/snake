@@ -1,5 +1,7 @@
 var Snake = function() {
+  this.paused = false;
   this.width = 5;
+  this.framesToMove = 3;
   this.pieces = [];
   this.corners = [];
 
@@ -13,14 +15,27 @@ var Snake = function() {
     return this.pieces[0];
   };
 
-  this.update = function(canvas_width, canvas_height, keyboardState) {
-    this.checkCollisions(canvas_width, canvas_height);
-    this.checkInputs(keyboardState);
-    this.checkPieces();
+  this.pause = function(){
+    this.paused = !this.paused;
   };
 
+  this.update = function(canvas_width, canvas_height, level, keyboardState) {
+    var currentLevel = level;
+    
+    this.checkCollisions(canvas_width, canvas_height);
+    this.checkInputs(keyboardState);
 
-  this.checkCollisions = function(canvas_width, canvas_height) {
+    if(this.framesToMove == 0 && !this.paused){
+      this.updatePiecesPosition();
+      this.framesToMove = 3;
+    }
+    else{
+      this.framesToMove -- ;
+    }
+    //devolver false si colisiono?
+  };
+
+  this.checkCollisions = function(map, food) {
     var head = this.getHead();
     if (head.pos.x >= canvas_width - this.width || head.pos.x <= 0)
       head.speed.x = 0;
@@ -50,11 +65,12 @@ var Snake = function() {
     }
   };
 
-  this.checkPieces = function() {
+  this.updatePiecesPosition = function() {
     var deleteLastCorner = false;
     var corners = this.corners;
+    var pieces = this.pieces;
 
-    $.each(this.pieces, function(indexPiece, piece) {
+    $.each(pieces, function(indexPiece, piece) {
       if (indexPiece != 0) {
         $.each(corners, function(indexCorner, corner) {
           if (piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y) {
@@ -62,7 +78,7 @@ var Snake = function() {
             piece.speed.x = corner.speed.x;
             piece.speed.y = corner.speed.y;
 
-            if (indexPiece == this.pieces.length - 1) {
+            if (indexPiece == pieces.length - 1) {
               //es la ultima pieza que doblo en la esquina
               //esta esquina no sirve mas
               deleteLastCorner = true;
@@ -75,14 +91,16 @@ var Snake = function() {
       piece.pos.y += piece.speed.y;
 
       if(deleteLastCorner){
-        this.corners.shift();
+        corners.shift();
       }
     });
   };
 
   this.draw = function(context) {
+    context.fillStyle = "rgb(200,0,0)";
+    var width= this.width;
     $.each(this.pieces, function(index, value) {
-      context.fillRect(value.pos.x, value.pos.y, this.width, this.width);
+      context.fillRect(value.pos.x, value.pos.y, width, width);
     });
   };
 
@@ -94,8 +112,11 @@ var Piece = function(posVector, speedVector) {
 };
 
 var Corner = function(posVector, speedVector) {
-  this.pos = posVector;
-  this.speed = speedVector;
+//  this.pos = posVector;
+//  this.speed = speedVector;
+
+  this.pos = new Vector(posVector.x,posVector.y);
+  this.speed = new Vector(speedVector.x, speedVector.y);
 };
 
 
