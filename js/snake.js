@@ -1,7 +1,7 @@
 var Snake = function() {
-  this.paused = false;
   this.width = 5;
   this.framesToMove = 3;
+  this.collisioned = false;
   this.pieces = [];
   this.corners = [];
 
@@ -15,32 +15,36 @@ var Snake = function() {
     return this.pieces[0];
   };
 
-  this.pause = function(){
-    this.paused = !this.paused;
-  };
-
   this.update = function(canvas_width, canvas_height, level, keyboardState) {
     var currentLevel = level;
     
-    this.checkCollisions(canvas_width, canvas_height);
+    this.checkCollisions(canvas_width, canvas_height, currentLevel);
     this.checkInputs(keyboardState);
 
-    if(this.framesToMove == 0 && !this.paused){
+    if(this.framesToMove == 0){
       this.updatePiecesPosition();
       this.framesToMove = 3;
     }
     else{
       this.framesToMove -- ;
     }
-    //devolver false si colisiono?
   };
 
-  this.checkCollisions = function(map, food) {
+  this.checkCollisions = function(canvas_width, canvas_height, currentLevel) {
     var head = this.getHead();
-    if (head.pos.x >= canvas_width - this.width || head.pos.x <= 0)
-      head.speed.x = 0;
-    if (head.pos.y <= 0 || head.pos.y >= canvas_height - this.width)
-      head.speed.y = 0;
+    var collisionOcurred = false;
+
+    if (head.pos.x >= canvas_width - this.width || head.pos.x <= 0 || head.pos.y <= 0 || head.pos.y >= canvas_height - this.width)
+      collisionOcurred = true;
+
+    $.each(this.pieces, function(indexPiece, piece) {
+      if(piece.pos.equals(head.pos) && (indexPiece != 0)){
+        //this.collisioned = true; NUNCA HAY QUE HACER UN THIS DENTRO DE ESTOS EACH!!!!1!!1!!
+        collisionOcurred = true;
+      }
+    });
+
+    this.collisioned = collisionOcurred;
   };
 
   this.checkInputs = function(keyboardState) {
@@ -112,9 +116,6 @@ var Piece = function(posVector, speedVector) {
 };
 
 var Corner = function(posVector, speedVector) {
-//  this.pos = posVector;
-//  this.speed = speedVector;
-
   this.pos = new Vector(posVector.x,posVector.y);
   this.speed = new Vector(speedVector.x, speedVector.y);
 };

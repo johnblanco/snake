@@ -5,13 +5,13 @@ var ctx;
 var canvas_height;
 var canvas_width;
 var keyboardState;
-var snake = new Snake();
+var snake;
 var timer;
-var gameStatus = "menu";
-
-var levels = [new Level([],[new Vector(165,205),new Vector(205,105)]),
-              new Level([],[new Vector(50,50),new Vector(100,100)])];
-var currentLevel = 0;
+var gameStatus;
+var gamePaused;
+var framesToWait;
+var levels;
+var currentLevel;
 
 function debugInfo(){
   var textY = 300;
@@ -42,7 +42,12 @@ function drawPlaying(){
 
 function drawMenu(){
   clear();
-  ctx.fillText("Press 's' to start game.",50,50);
+  ctx.fillText("Press 's' to start game.", 50, 50);
+}
+
+function drawGameOver(){
+  clear();
+  ctx.fillText("Game over", 50, 50);
 }
 
 function update(){
@@ -55,12 +60,45 @@ function update(){
     case "playing":
       snake.update(canvas_width, canvas_height, levels[currentLevel], keyboardState);
       drawPlaying();
-      if(keyboardState.pDown)
-        snake.pause();
+      
+      if(snake.collisioned){
+        gameStatus = "gameover";
+        framesToWait = 45;
+      }
       break;
     case "gameover":
+      if(framesToWait > 0){
+        drawGameOver();
+        framesToWait --;
+      }
+      else{
+        initGame();
+      }
     break;
   }
+}
+
+function initGame(){
+  ctx.fillStyle = "rgb(200,0,0)";
+
+  clearInterval(timer);
+
+  snake = new Snake();
+  gamePaused = false;
+  gameStatus = "menu";
+  levels = [new Level([],
+            [
+              new Vector(130,94),
+              new Vector(130,123),
+              new Vector(330,123),
+              new Vector(561,195),
+              new Vector(450,193),
+              new Vector(10,205),
+              new Vector(205,105)]),
+              new Level([],[new Vector(50,50),new Vector(100,100)])];
+  currentLevel = 0;
+
+  timer = setInterval(update, 30);
 }
 
 $(document).ready(function(){
@@ -81,9 +119,14 @@ $(document).ready(function(){
       keyboardState.sDown = true;
     }
     if(evt.keyCode == 80){ // p key
-      keyboardState.pDown = true;
+      if(gamePaused){
+        timer = setInterval(update, 30);
+      }
+      else{
+        clearInterval(timer);
+      }
+      gamePaused = !gamePaused;
     }
-
   });
 
   $(document).keyup(function(evt){
@@ -93,6 +136,6 @@ $(document).ready(function(){
   ctx = $('#canvas')[0].getContext("2d");
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
-  timer = setInterval(update, 30);
+  initGame();
 
 });
