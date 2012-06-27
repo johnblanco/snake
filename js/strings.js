@@ -1,2 +1,2 @@
-var START_GAME = "Press 's' to start game.";
-var GAME_OVER = "Game over";
+var START_GAME = "Presiona 's' para comenzar el juego.";
+var GAME_OVER = "Perdiste! :-(";
