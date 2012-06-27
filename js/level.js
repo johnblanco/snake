@@ -2,9 +2,17 @@ var Level = function(rectangles, foods){
   this.foods = foods;
   this.currentFoodIndex = 0;
   this.foodDiameter = 6;
+  this.levelCleared = false;
 
   this.getCurrentFood = function(){
     return this.foods[this.currentFoodIndex];
+  }
+
+  this.moveNextFood = function(){
+    this.currentFoodIndex ++;
+    if(this.currentFoodIndex >= this.foods.length){
+      this.levelCleared = true;
+    }
   }
 
   this.draw = function(ctx, canvas_width, canvas_height){

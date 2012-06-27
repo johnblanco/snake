@@ -1,6 +1,6 @@
 var Snake = function() {
   this.width = 5;
-  this.framesToMove = 3;
+  this.framesToMove = 1;
   this.collisioned = false;
   this.pieces = [];
   this.corners = [];
@@ -23,7 +23,7 @@ var Snake = function() {
 
     if(this.framesToMove == 0){
       this.updatePiecesPosition();
-      this.framesToMove = 3;
+      this.framesToMove = 1;
     }
     else{
       this.framesToMove -- ;
@@ -49,7 +49,7 @@ var Snake = function() {
     //come comida?
     //asumo que la comida es un rectangulo (asi es mas facil :P)
     if(rectanglesCollide(head.pos, this.width, this.width, level.getCurrentFood(), level.foodDiameter, level.foodDiameter)){
-      level.currentFoodIndex ++;
+      level.moveNextFood()
       this.grow();
     }
 

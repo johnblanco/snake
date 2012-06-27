@@ -83,6 +83,8 @@ function update(){
         gameStatus = "gameover";
         framesToWait = 45;
       }
+      if(level.cleared)
+
       break;
     case "gameover":
       if(framesToWait > 0){
