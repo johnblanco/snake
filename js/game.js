@@ -13,6 +13,24 @@ var framesToWait;
 var levels;
 var currentLevel;
 
+function rectanglesCollide(pos1, width1, height1, pos2, width2, height2){
+  var left1 = pos1.x;
+  var left2 = pos2.x;
+  var top1 = pos1.y;
+  var top2 = pos2.y;
+  var bottom1 = pos1.y + height1;
+  var bottom2 = pos2.y + height2;
+  var right1 = pos1.x + width1;
+  var right2 = pos2.x + width2;
+
+  if(bottom1 < top2 || top1 > bottom2 || right1 < left2 || left1 > right2){
+    return false;
+  }
+  else{
+    return true;
+  }
+}
+
 function debugInfo(){
   var textY = 300;
   $.each(snake.pieces,function(index,value){
@@ -50,6 +68,11 @@ function drawGameOver(){
   ctx.fillText(GAME_OVER, 50, 50);
 }
 
+function drawLevelCleared(){
+  clear();
+  ctx.fillText(LEVEL_CLEARED, 50, 50);
+}
+
 function update(){
   switch(gameStatus){
     case "menu":
@@ -58,15 +81,33 @@ function update(){
         gameStatus = "playing";
       break;
     case "playing":
+      if(levels[currentLevel].levelCleared){
+        gameStatus = "level_cleared";
+        framesToWait = 45;
+        return;
+      }
+      if(snake.collisioned){
+        gameStatus = "game_over";
+        framesToWait = 45;
+        return;
+      }
+
       snake.update(canvas_width, canvas_height, levels[currentLevel], keyboardState);
       drawPlaying();
-      
-      if(snake.collisioned){
-        gameStatus = "gameover";
-        framesToWait = 45;
+
+      break;
+    case "level_cleared":
+      if(framesToWait > 0){
+        drawLevelCleared();
+        framesToWait --;
+      }
+      else{
+        //iniciar nuevo nivel
+        currentLevel ++;
+        gameStatus = "playing";
       }
       break;
-    case "gameover":
+    case "game_over":
       if(framesToWait > 0){
         drawGameOver();
         framesToWait --;
@@ -87,15 +128,22 @@ function initGame(){
   gamePaused = false;
   gameStatus = "menu";
   levels = [new Level([],
-            [
-              new Vector(130,94),
-              new Vector(130,123),
-              new Vector(330,123),
-              new Vector(561,195),
-              new Vector(450,193),
-              new Vector(10,205),
-              new Vector(205,105)]),
-              new Level([],[new Vector(50,50),new Vector(100,100)])];
+    [
+      new Vector(130, 94),
+      new Vector(130, 123),
+      new Vector(330, 123),
+      new Vector(561, 195),
+      new Vector(450, 193),
+      new Vector(330, 233),
+      new Vector(210, 293),
+      new Vector(450, 343),
+      new Vector(561, 435),
+      new Vector(461, 435),
+      new Vector(421, 435),
+      new Vector(391, 435)]),
+    new Level([], [
+      new Vector(400, 400),
+      new Vector(410, 410)])];
   currentLevel = 0;
 
   timer = setInterval(update, 30);
@@ -134,6 +182,7 @@ $(document).ready(function(){
   });
 
   ctx = $('#canvas')[0].getContext("2d");
+  ctx.font = "20pt Arial";
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
   initGame();

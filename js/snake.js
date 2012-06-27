@@ -1,6 +1,6 @@
 var Snake = function() {
   this.width = 5;
-  this.framesToMove = 3;
+  this.framesToMove = 1;
   this.collisioned = false;
   this.pieces = [];
   this.corners = [];
@@ -23,26 +23,35 @@ var Snake = function() {
 
     if(this.framesToMove == 0){
       this.updatePiecesPosition();
-      this.framesToMove = 3;
+      this.framesToMove = 1;
     }
     else{
       this.framesToMove -- ;
     }
   };
 
-  this.checkCollisions = function(canvas_width, canvas_height, currentLevel) {
+  this.checkCollisions = function(canvas_width, canvas_height, level) {
     var head = this.getHead();
     var collisionOcurred = false;
 
+    //choca los bordes de la pantalla?
     if (head.pos.x >= canvas_width - this.width || head.pos.x <= 0 || head.pos.y <= 0 || head.pos.y >= canvas_height - this.width)
       collisionOcurred = true;
 
+    //se choca contra si misma?
     $.each(this.pieces, function(indexPiece, piece) {
       if(piece.pos.equals(head.pos) && (indexPiece != 0)){
         //this.collisioned = true; NUNCA HAY QUE HACER UN THIS DENTRO DE ESTOS EACH!!!!1!!1!!
         collisionOcurred = true;
       }
     });
+
+    //come comida?
+    //asumo que la comida es un rectangulo (asi es mas facil :P)
+    if(rectanglesCollide(head.pos, this.width, this.width, level.getCurrentFood(), level.foodDiameter, level.foodDiameter)){
+      level.moveNextFood()
+      this.grow();
+    }
 
     this.collisioned = collisionOcurred;
   };
@@ -106,6 +115,20 @@ var Snake = function() {
     $.each(this.pieces, function(index, value) {
       context.fillRect(value.pos.x, value.pos.y, width, width);
     });
+  };
+
+  this.grow = function(){
+    var lastIndex = this.pieces.length -1;
+    var lastPiece = this.pieces[lastIndex];
+
+    //si la ultima era 10,10 5,0
+    //la proxima sera 5,10 5,0
+    this.pieces[lastIndex + 1] = new Piece(new Vector(lastPiece.pos.x - lastPiece.speed.x, lastPiece.pos.y - lastPiece.speed.y),
+                                  new Vector(lastPiece.speed.x, lastPiece.speed.y));
+    
+    this.pieces[lastIndex + 2] = new Piece(new Vector(lastPiece.pos.x - 2* lastPiece.speed.x, lastPiece.pos.y - 2* lastPiece.speed.y),
+                                  new Vector(lastPiece.speed.x, lastPiece.speed.y));
+
   };
 
 };
