@@ -68,6 +68,11 @@ function drawGameOver(){
   ctx.fillText(GAME_OVER, 50, 50);
 }
 
+function drawLevelCleared(){
+  clear();
+  ctx.fillText(LEVEL_CLEARED, 50, 50);
+}
+
 function update(){
   switch(gameStatus){
     case "menu":
@@ -76,17 +81,33 @@ function update(){
         gameStatus = "playing";
       break;
     case "playing":
+      if(levels[currentLevel].levelCleared){
+        gameStatus = "level_cleared";
+        framesToWait = 45;
+        return;
+      }
+      if(snake.collisioned){
+        gameStatus = "game_over";
+        framesToWait = 45;
+        return;
+      }
+
       snake.update(canvas_width, canvas_height, levels[currentLevel], keyboardState);
       drawPlaying();
-      
-      if(snake.collisioned){
-        gameStatus = "gameover";
-        framesToWait = 45;
-      }
-      if(level.cleared)
 
       break;
-    case "gameover":
+    case "level_cleared":
+      if(framesToWait > 0){
+        drawLevelCleared();
+        framesToWait --;
+      }
+      else{
+        //iniciar nuevo nivel
+        currentLevel ++;
+        gameStatus = "playing";
+      }
+      break;
+    case "game_over":
       if(framesToWait > 0){
         drawGameOver();
         framesToWait --;
@@ -107,20 +128,22 @@ function initGame(){
   gamePaused = false;
   gameStatus = "menu";
   levels = [new Level([],
-            [
-              new Vector(130,94),
-              new Vector(130,123),
-              new Vector(330,123),
-              new Vector(561,195),
-              new Vector(450,193),
-              new Vector(330,233),
-              new Vector(210,293),
-              new Vector(450,343),
-              new Vector(561,435),
-              new Vector(461,435),
-              new Vector(421,435),
-              new Vector(391,435)]),
-              new Level([],[new Vector(50,50),new Vector(100,100)])];
+    [
+      new Vector(130, 94),
+      new Vector(130, 123),
+      new Vector(330, 123),
+      new Vector(561, 195),
+      new Vector(450, 193),
+      new Vector(330, 233),
+      new Vector(210, 293),
+      new Vector(450, 343),
+      new Vector(561, 435),
+      new Vector(461, 435),
+      new Vector(421, 435),
+      new Vector(391, 435)]),
+    new Level([], [
+      new Vector(400, 400),
+      new Vector(410, 410)])];
   currentLevel = 0;
 
   timer = setInterval(update, 30);
@@ -159,6 +182,7 @@ $(document).ready(function(){
   });
 
   ctx = $('#canvas')[0].getContext("2d");
+  ctx.font = "20pt Arial";
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
   initGame();
