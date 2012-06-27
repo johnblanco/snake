@@ -13,6 +13,24 @@ var framesToWait;
 var levels;
 var currentLevel;
 
+function rectanglesCollide(pos1, width1, height1, pos2, width2, height2){
+  var left1 = pos1.x;
+  var left2 = pos2.x;
+  var top1 = pos1.y;
+  var top2 = pos2.y;
+  var bottom1 = pos1.y + height1;
+  var bottom2 = pos2.y + height2;
+  var right1 = pos1.x + width1;
+  var right2 = pos2.x + width2;
+
+  if(bottom1 < top2 || top1 > bottom2 || right1 < left2 || left1 > right2){
+    return false;
+  }
+  else{
+    return true;
+  }
+}
+
 function debugInfo(){
   var textY = 300;
   $.each(snake.pieces,function(index,value){
@@ -93,8 +111,13 @@ function initGame(){
               new Vector(330,123),
               new Vector(561,195),
               new Vector(450,193),
-              new Vector(10,205),
-              new Vector(205,105)]),
+              new Vector(330,233),
+              new Vector(210,293),
+              new Vector(450,343),
+              new Vector(561,435),
+              new Vector(461,435),
+              new Vector(421,435),
+              new Vector(391,435)]),
               new Level([],[new Vector(50,50),new Vector(100,100)])];
   currentLevel = 0;
 
