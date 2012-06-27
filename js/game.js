@@ -37,17 +37,17 @@ function drawPlaying(){
   levels[currentLevel].draw(ctx, canvas_width, canvas_height);
   //draw snake
   snake.draw(ctx);
-  debugInfo();
+//  debugInfo();
 }
 
 function drawMenu(){
   clear();
-  ctx.fillText("Press 's' to start game.", 50, 50);
+  ctx.fillText(START_GAME , 50, 50);
 }
 
 function drawGameOver(){
   clear();
-  ctx.fillText("Game over", 50, 50);
+  ctx.fillText(GAME_OVER, 50, 50);
 }
 
 function update(){
