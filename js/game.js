@@ -73,6 +73,11 @@ function drawLevelCleared(){
   ctx.fillText(LEVEL_CLEARED, 50, 50);
 }
 
+function drawCongratulations(){
+  clear();
+  ctx.fillText(CONGRATULATIONS, 50, 50);
+}
+
 function update(){
   switch(gameStatus){
     case "menu":
@@ -85,16 +90,14 @@ function update(){
         gameStatus = "level_cleared";
         framesToWait = 45;
         return;
-      }
-      if(snake.collisioned){
+      }else if(snake.collisioned){
         gameStatus = "game_over";
         framesToWait = 45;
         return;
+      }else{
+        snake.update(canvas_width, canvas_height, levels[currentLevel], keyboardState);
+        drawPlaying();
       }
-
-      snake.update(canvas_width, canvas_height, levels[currentLevel], keyboardState);
-      drawPlaying();
-
       break;
     case "level_cleared":
       if(framesToWait > 0){
@@ -103,8 +106,15 @@ function update(){
       }
       else{
         //iniciar nuevo nivel
-        currentLevel ++;
-        gameStatus = "playing";
+        if(currentLevel + 1 < levels.length){
+          currentLevel ++;
+          snake = new Snake();
+          gameStatus = "playing";
+        }
+        else{
+          framesToWait = 90;
+          gameStatus = "congratulations";
+        }
       }
       break;
     case "game_over":
@@ -116,6 +126,16 @@ function update(){
         initGame();
       }
     break;
+    case "congratulations":
+      if(framesToWait > 0){
+        drawCongratulations();
+        framesToWait --;
+      }
+      else{
+        initGame();
+      }
+    break;
+
   }
 }
 
@@ -127,23 +147,7 @@ function initGame(){
   snake = new Snake();
   gamePaused = false;
   gameStatus = "menu";
-  levels = [new Level([],
-    [
-      new Vector(130, 94),
-      new Vector(130, 123),
-      new Vector(330, 123),
-      new Vector(561, 195),
-      new Vector(450, 193),
-      new Vector(330, 233),
-      new Vector(210, 293),
-      new Vector(450, 343),
-      new Vector(561, 435),
-      new Vector(461, 435),
-      new Vector(421, 435),
-      new Vector(391, 435)]),
-    new Level([], [
-      new Vector(400, 400),
-      new Vector(410, 410)])];
+  levels = loadLevelData();
   currentLevel = 0;
 
   timer = setInterval(update, 30);

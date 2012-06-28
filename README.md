@@ -30,7 +30,5 @@ agregar require.js
 
 tareas para hoy...
 
-arrancas el juego y dice... presione S para comenzar
-al apretar S, aparece un mensaje que dice level 1 que desaparece al segundo
-si colisiona aparece game over, luego de 3 segundos, reinicia a la pantalla de inicio
-una vez que comes toda la comida dice level cleared y al segundo aparece level 2 que desaparece al segundo,
+musica: menu, nivel 1, 2 y 3
+efectos de sonido: movimiento, comer, game over, pasar de pantalla

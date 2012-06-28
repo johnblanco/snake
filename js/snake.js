@@ -1,13 +1,13 @@
 var Snake = function() {
   this.width = 5;
-  this.framesToMove = 1;
+  this.framesToMove = 3;
   this.collisioned = false;
   this.pieces = [];
   this.corners = [];
 
   var posX = 50;
   for (var i = 0; i <= 8; i++) {
-    this.pieces[i] = new Piece(new Vector(posX, 50), new Vector(5, 0));
+    this.pieces[i] = new Piece(new Vector(posX, 49), new Vector(5, 0));
     posX -= 5;
   }
 
@@ -45,6 +45,15 @@ var Snake = function() {
         collisionOcurred = true;
       }
     });
+
+    //choca obstaculos?
+    var snakeWidth = this.width;
+    $.each(level.obstacles, function(index, obstacle){
+      if(rectanglesCollide(head.pos, snakeWidth, snakeWidth, obstacle.position, obstacle.width, obstacle.height)){
+        collisionOcurred = true;
+      }
+    });
+
 
     //come comida?
     //asumo que la comida es un rectangulo (asi es mas facil :P)
