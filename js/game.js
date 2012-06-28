@@ -186,7 +186,7 @@ $(document).ready(function(){
   });
 
   ctx = $('#canvas')[0].getContext("2d");
-  ctx.font = "20pt Arial";
+  ctx.font = "16pt Arial";
   canvas_width = $("#canvas").attr("width");
   canvas_height = $("#canvas").attr("height");
   initGame();

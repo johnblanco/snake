@@ -1,6 +1,6 @@
 var Snake = function() {
   this.width = 5;
-  this.framesToMove = 3;
+  this.framesToMove = 1; //si lo cambias, actualizalo tambien en linea 26
   this.collisioned = false;
   this.pieces = [];
   this.corners = [];
