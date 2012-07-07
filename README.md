@@ -16,7 +16,6 @@ que pueden ser
 que se ponga mas gorda
 que se ponga mas flaca
 que pueda pasarse por encima
-que se reduzca el area de vision
 que se reduzca la velocidad
 que se duplique la velocidad
 
