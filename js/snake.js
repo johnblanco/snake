@@ -17,11 +17,11 @@ var Snake = function() {
 
   this.update = function(canvas_width, canvas_height, level, keyboardState) {
     var currentLevel = level;
-    
+
     this.checkCollisions(canvas_width, canvas_height, currentLevel);
     this.checkInputs(keyboardState);
 
-    if(this.framesToMove == 0){
+    if(this.framesToMove === 0){
       this.updatePiecesPosition();
       this.framesToMove = 1;
     }
@@ -33,16 +33,16 @@ var Snake = function() {
   this.checkCollisions = function(canvas_width, canvas_height, level) {
     var head = this.getHead();
     var collisionOcurred = false;
+    var self = this;
 
     //choca los bordes de la pantalla?
     if (head.pos.x >= canvas_width - this.width || head.pos.x <= 0 || head.pos.y <= 0 || head.pos.y >= canvas_height - this.width)
-      collisionOcurred = true;
+      self.collisioned = true;
 
     //se choca contra si misma?
     $.each(this.pieces, function(indexPiece, piece) {
-      if(piece.pos.equals(head.pos) && (indexPiece != 0)){
-        //this.collisioned = true; NUNCA HAY QUE HACER UN THIS DENTRO DE ESTOS EACH!!!!1!!1!!
-        collisionOcurred = true;
+      if(piece.pos.equals(head.pos) && (indexPiece !== 0)){
+        self.collisioned = true;
       }
     });
 
@@ -50,38 +50,37 @@ var Snake = function() {
     var snakeWidth = this.width;
     $.each(level.obstacles, function(index, obstacle){
       if(rectanglesCollide(head.pos, snakeWidth, snakeWidth, obstacle.position, obstacle.width, obstacle.height)){
-        collisionOcurred = true;
+        self.collisioned = true;
       }
     });
 
-
+    console.log('collisioned!');
     //come comida?
     //asumo que la comida es un rectangulo (asi es mas facil :P)
     if(rectanglesCollide(head.pos, this.width, this.width, level.getCurrentFood(), level.foodDiameter, level.foodDiameter)){
-      level.moveNextFood()
+      level.moveNextFood();
       this.grow();
     }
 
-    this.collisioned = collisionOcurred;
   };
 
   this.checkInputs = function(keyboardState) {
     var head = this.getHead();
-    if (keyboardState.upDown && head.speed.y == 0) {
+    if (keyboardState.upDown && head.speed.y === 0) {
       head.speed = new Vector(0, -5);
       this.corners.push(new Corner(head.pos, head.speed));
     }
-    if (keyboardState.downDown && head.speed.y == 0) {
+    if (keyboardState.downDown && head.speed.y === 0) {
       head.speed = new Vector(0, 5);
       this.corners.push(new Corner(head.pos, head.speed));
     }
 
-    if (keyboardState.leftDown && head.speed.x == 0) {
+    if (keyboardState.leftDown && head.speed.x === 0) {
       head.speed = new Vector(-5, 0);
       this.corners.push(new Corner(head.pos, head.speed));
     }
 
-    if (keyboardState.rightDown && head.speed.x == 0) {
+    if (keyboardState.rightDown && head.speed.x === 0) {
       head.speed = new Vector(5, 0);
       this.corners.push(new Corner(head.pos, head.speed));
     }
@@ -93,7 +92,7 @@ var Snake = function() {
     var pieces = this.pieces;
 
     $.each(pieces, function(indexPiece, piece) {
-      if (indexPiece != 0) {
+      if (indexPiece !== 0) {
         $.each(corners, function(indexCorner, corner) {
           if (piece.pos.x == corner.pos.x && piece.pos.y == corner.pos.y) {
 
@@ -134,7 +133,7 @@ var Snake = function() {
     //la proxima sera 5,10 5,0
     this.pieces[lastIndex + 1] = new Piece(new Vector(lastPiece.pos.x - lastPiece.speed.x, lastPiece.pos.y - lastPiece.speed.y),
                                   new Vector(lastPiece.speed.x, lastPiece.speed.y));
-    
+
     this.pieces[lastIndex + 2] = new Piece(new Vector(lastPiece.pos.x - 2* lastPiece.speed.x, lastPiece.pos.y - 2* lastPiece.speed.y),
                                   new Vector(lastPiece.speed.x, lastPiece.speed.y));
 
